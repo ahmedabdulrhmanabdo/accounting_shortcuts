@@ -1,16 +1,27 @@
 ### Accounting Shortcuts
 
-Accounting dashboard shortcuts module
+لوحة تحكم مخصصة لعملاء ERPNext/Frappe — واجهة مبسطة بالعربي والإنجليزي (RTL/LTR) تعرض
+اختصارات وإحصائيات محاسبية سريعة، وتفتح نماذج ERPNext الأصلية (فاتورة مبيعات، قيود
+يومية، سندات قبض/صرف...) داخل نفس تصميم الداشبورد بدل واجهة Frappe Desk الكاملة.
+
+A custom customer-facing dashboard for ERPNext/Frappe sites. Renders a lightweight
+bilingual (Arabic/English, RTL/LTR) shell with quick accounting stats and shortcuts,
+and hosts native ERPNext forms (Sales Invoice, Journal Entry, Payment Entry, ...)
+inside a controlled iframe with simplified styling — instead of exposing the full
+Frappe Desk UI to end customers.
+
+**الصفحة الرئيسية / Entry point:** `/saas-home` (redirects `Guest` → `/login`)
 
 ### Installation
-
-You can install this app using the [bench](https://github.com/frappe/bench) CLI:
 
 ```bash
 cd $PATH_TO_YOUR_BENCH
 bench get-app $URL_OF_THIS_REPO --branch develop
 bench install-app accounting_shortcuts
 ```
+
+بعد التثبيت، أي مستخدم من نوع `System User` (غير Administrator) بيتوجه تلقائياً
+لـ `/saas-home` عند تسجيل الدخول، عبر hook `get_website_user_home_page`.
 
 ### Contributing
 
