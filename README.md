@@ -67,6 +67,26 @@ bench --site site1.local uninstall-app accounting_shortcuts
 bench restart
 ```
 
+### استكشاف الأخطاء / Troubleshooting
+
+**صفحات الموقع ترجع خطأ 500 بعد `bench get-app` أو `bench new-app`؟**
+
+أوامر bench هذه تعيد توليد `sites/apps.txt` وقد تُسقط منه تطبيقات مثبّتة يدوياً،
+فتتعطل كل صفحاتها برسالة `TemplateNotFound`. هذا التطبيق يتضمن حماية تلقائية
+(`after_install`) تعيد أي تطبيق ناقص عند تثبيته، لكن لو صادفت المشكلة مع تطبيق آخر:
+
+```bash
+# افحص الملف وأضف أي تطبيق ناقص (سطر لكل تطبيق)
+cat sites/apps.txt
+echo "missing_app_name" >> sites/apps.txt
+bench --site your-site clear-cache && bench restart
+```
+
+These bench commands regenerate `sites/apps.txt` from bench's own registry and can
+silently drop manually-installed apps, breaking all their website pages with
+`TemplateNotFound`. This app ships an `after_install` guard that restores any
+missing apps automatically at install time.
+
 ### Contributing
 
 This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:

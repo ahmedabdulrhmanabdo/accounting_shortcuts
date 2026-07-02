@@ -85,7 +85,7 @@ get_website_user_home_page = "accounting_shortcuts.website_home.get_customer_hom
 # ------------
 
 # before_install = "accounting_shortcuts.install.before_install"
-# after_install = "accounting_shortcuts.install.after_install"
+after_install = "accounting_shortcuts.install.after_install"
 
 # Uninstallation
 # ------------
