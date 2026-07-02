@@ -10,18 +10,62 @@ and hosts native ERPNext forms (Sales Invoice, Journal Entry, Payment Entry, ...
 inside a controlled iframe with simplified styling — instead of exposing the full
 Frappe Desk UI to end customers.
 
-**الصفحة الرئيسية / Entry point:** `/saas-home` (redirects `Guest` → `/login`)
+**الصفحة الرئيسية / Entry point:** `/saas-home` (يحوّل الزائر غير المسجل إلى `/login`)
 
-### Installation
+### المتطلبات / Requirements
+
+- Frappe Framework v15
+- ERPNext v15
+
+### التثبيت / Installation
 
 ```bash
-cd $PATH_TO_YOUR_BENCH
-bench get-app $URL_OF_THIS_REPO --branch develop
-bench install-app accounting_shortcuts
+# 1) ادخل على مجلد الـ bench عندك (المسار الافتراضي)
+cd /home/frappe/frappe-bench
+
+# 2) حمّل التطبيق من GitHub
+bench get-app https://github.com/ahmedabdulrhmanabdo/accounting_shortcuts --branch main
+
+# 3) ثبّته على موقعك (استبدل site1.local باسم موقعك)
+bench --site site1.local install-app accounting_shortcuts
+
+# 4) حدّث الأصول والكاش ثم أعد التشغيل
+bench --site site1.local migrate
+bench --site site1.local clear-cache
+bench restart
 ```
 
-بعد التثبيت، أي مستخدم من نوع `System User` (غير Administrator) بيتوجه تلقائياً
-لـ `/saas-home` عند تسجيل الدخول، عبر hook `get_website_user_home_page`.
+### بعد التثبيت / After install
+
+- افتح `https://your-site/saas-home` وستظهر لوحة التحكم مباشرة.
+- أي مستخدم من نوع `System User` (غير Administrator) يتوجه تلقائياً إلى
+  `/saas-home` عند تسجيل الدخول، عبر hook `get_website_user_home_page`.
+- زر 🌐 أعلى الصفحة يبدّل اللغة بين العربية (RTL) والإنجليزية (LTR) ويحفظ
+  الاختيار في المتصفح.
+
+### بنية الملفات / File structure
+
+```
+accounting_shortcuts/
+├── accounting_shortcuts/
+│   ├── hooks.py                  # get_website_user_home_page hook
+│   ├── website_home.py           # توجيه المستخدمين إلى /saas-home
+│   └── www/
+│       ├── saas-home.html        # واجهة الداشبورد (HTML/CSS/JS)
+│       └── saas_home.py          # منطق الصفحة (الإحصائيات وآخر الفواتير)
+└── README.md
+```
+
+> ملاحظة: ملف البايثون اسمه `saas_home.py` بشرطة سفلية — Frappe يحوّل الشرطات (`-`)
+> في اسم الصفحة إلى شرطات سفلية (`_`) عند البحث عن موديول البايثون المرافق.
+
+### إلغاء التثبيت / Uninstall
+
+```bash
+cd /home/frappe/frappe-bench
+bench --site site1.local uninstall-app accounting_shortcuts
+bench restart
+```
 
 ### Contributing
 
@@ -41,4 +85,4 @@ Pre-commit is configured to use the following tools for checking and formatting 
 
 ### License
 
-mit
+MIT
