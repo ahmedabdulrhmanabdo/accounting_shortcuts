@@ -8,21 +8,35 @@ def after_install():
 
 
 def ensure_apps_txt_integrity():
-    """bench get-app / new-app regenerates sites/apps.txt from its own registry
-    (sites/apps.json) and silently drops apps that were installed manually.
-    Frappe's Jinja loader only searches apps listed in apps.txt, so a dropped
-    app makes every one of its website pages fail with TemplateNotFound (500).
+    """bench get-app / new-app / install-app regenerates sites/apps.txt and
+    silently drops any app it does not consider valid (bench requires
+    hooks.py, modules.txt AND patches.txt to exist). Frappe's Jinja loader
+    and module map only include apps listed in apps.txt, so a dropped app
+    breaks all its website pages (TemplateNotFound 500) and desk pages
+    (Module not found).
 
-    Re-add any app that is installed on this site but missing from apps.txt.
+    Scan the bench apps directory and re-add every real Frappe app missing
+    from apps.txt — not just apps installed on the current site.
     """
-    apps_txt = os.path.join(frappe.local.sites_path, "apps.txt")
+    sites_path = os.path.abspath(frappe.local.sites_path)
+    apps_txt = os.path.join(sites_path, "apps.txt")
+    apps_dir = os.path.join(os.path.dirname(sites_path), "apps")
     try:
         with open(apps_txt) as f:
             listed = [line.strip() for line in f if line.strip()]
     except FileNotFoundError:
         return
 
-    missing = [app for app in frappe.get_installed_apps() if app not in listed]
+    missing = []
+    for app in sorted(os.listdir(apps_dir)):
+        if app in listed:
+            continue
+        inner = os.path.join(apps_dir, app, app)
+        if os.path.exists(os.path.join(inner, "hooks.py")) and os.path.exists(
+            os.path.join(inner, "modules.txt")
+        ):
+            missing.append(app)
+
     if not missing:
         return
 
